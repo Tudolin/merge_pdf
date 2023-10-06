@@ -21,7 +21,13 @@ def merge_pdfs(caminho_arquivo, nome_arquivo):
 
     merge = PyPDF2.PdfMerger()
 
-    lista_arquivos = os.listdir(caminho_arquivo_absoluto)
+    try:
+        lista_arquivos = os.listdir(caminho_arquivo_absoluto)
+    except FileNotFoundError:
+        print(f"Error: Directory '{caminho_arquivo_absoluto}' not found.")
+        return
+    except TypeError:
+        print(f"Error")
 
     lista_arquivos.sort()
 
@@ -31,7 +37,7 @@ def merge_pdfs(caminho_arquivo, nome_arquivo):
             try:
                 merge.append(arquivo_path)
             except Exception as e:
-                print(f"Erro ao ler o arquivo '{arquivo}': {e}")
+                print(f"Error: can't read the archive = '{arquivo}': {e}")
                 continue
 
     merge.write(caminho_com_nome)
@@ -39,13 +45,13 @@ def merge_pdfs(caminho_arquivo, nome_arquivo):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Unir arquivos PDF.")
+    parser = argparse.ArgumentParser(description="Merge PDF archives.")
 
-    parser.add_argument("--path", type=path_type, required=True,
-                        help="Caminho para o diretório contendo os arquivos PDF a serem mesclados")
+    parser.add_argument("--folder", type=path_type, required=True,
+                        help="The path of the PDF's to be merged.")
 
     parser.add_argument("--name", type=str, required=True,
-                        help="Nome do arquivo mesclado")
+                        help="Final file name.")
     args = parser.parse_args()
 
-    merge_pdfs(args.path, args.name+'.pdf')
+    merge_pdfs(args.folder, args.name+'.pdf')
