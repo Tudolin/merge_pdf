@@ -11,36 +11,40 @@ def path_type(path_string):
         return os.path.abspath(os.path.join(os.getcwd(), path_string))
 
 
-def merge_pdfs(caminho_arquivo, nome_arquivo):
-    diretorio_atual = os.getcwd()
+def merge_pdfs(archive_path, nome_arquivo):
+    directory = os.getcwd()
 
-    caminho_arquivo_absoluto = os.path.abspath(
-        os.path.join(diretorio_atual, caminho_arquivo))
+    absolute_archive_path = os.path.abspath(
+        os.path.join(directory, archive_path))
 
-    caminho_com_nome = os.path.join(diretorio_atual, nome_arquivo)
+    path_name = os.path.join(directory, nome_arquivo)
 
     merge = PyPDF2.PdfMerger()
 
     try:
-        lista_arquivos = os.listdir(caminho_arquivo_absoluto)
+        archive_list = os.listdir(absolute_archive_path)
     except FileNotFoundError:
-        print(f"Error: Directory '{caminho_arquivo_absoluto}' not found.")
+        print(f"Error: Directory/Folder '{absolute_archive_path}' not found.")
         return
     except TypeError:
         print(f"Error")
 
-    lista_arquivos.sort()
+    archive_list.sort()
 
-    for arquivo in lista_arquivos:
-        if arquivo.lower().endswith(".pdf"):
-            arquivo_path = os.path.join(caminho_arquivo_absoluto, arquivo)
+    for archive in archive_list:
+        if not archive.lower().endswith(".pdf"):
+            print(f"Error: the archive '{archive}' isn't a pdf and can't be merged.")
+            continue
+        if archive.lower().endswith(".pdf"):
+            archive_path = os.path.join(absolute_archive_path, archive)
             try:
-                merge.append(arquivo_path)
+                merge.append(archive_path)
             except Exception as e:
-                print(f"Error: can't read the archive = '{arquivo}': {e}")
+                print(f"Error: can't read the archive = '{archive}': {e}")
                 continue
 
-    merge.write(caminho_com_nome)
+
+    merge.write(path_name)
     merge.close()
 
 
@@ -48,7 +52,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Merge PDF archives.")
 
     parser.add_argument("--folder", type=path_type, required=True,
-                        help="The path of the PDF's to be merged.")
+                        help="The path of the PDF's to be merged. Obs: separated names or directorys should be in quotes '' :D .")
 
     parser.add_argument("--name", type=str, required=True,
                         help="Final file name.")
